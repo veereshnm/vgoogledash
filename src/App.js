@@ -66,18 +66,26 @@ const Events = ({eventId}) => {
 function GCalendarList({ calendars }) {
   console.log('component GCalendarList rendered');
   console.log(calendars);
+
+
+
+  var collapsibleElem = React.useRef();
+
+  React.useEffect(()=> {
+      M.Collapsible.init(collapsibleElem.current,{accordion: true});
+  },[])
   return (<div>
     <div>
-      <div class="card blue-grey darken-1">
-        <div class="card-content white-text">
-          <span class="card-title">Calendars</span>
+      <div className="card blue-grey darken-1">
+        <div className="card-content white-text">
+          <span className="card-title">Calendars</span>
           {(calendars && calendars.length > 0) ?
-              <ul class="collapsible">
+              <ul ref={collapsibleElem} className="collapsible">
               {
               calendars.map((item) => {
                       return <li key={item.id}>
-                          <div class="collapsible-header black-text">{item.summaryOverride ? item.summaryOverride : item.summary}</div>
-                          <div class="collapsible-body">
+                          <div className="collapsible-header black-text">{item.summaryOverride ? item.summaryOverride : item.summary}</div>
+                          <div className="collapsible-body">
                             <Events eventId={item.id}></Events>
                           </div>
                         </li>
@@ -94,32 +102,22 @@ function GCalendarList({ calendars }) {
   </div>);
 }
 
-function EventList() {
-  //get the calender id saved in local store.
-  //load the re
-
-  return (<div>
-
-  </div>);
-}
-
 const Navigation = ({ signinButton, signoutButton }) => {
   return (
-    <nav>
-      <div class="nav-wrapper orange darken-4">
-        <ul id="nav-mobile" class="right hide-on-med-and-down">
-          <li>
-            {/* eslint-disable-next-line*/}
-            <a id="signin" ref={signinButton} className="waves-effect waves-light btn">Sign in</a>
-          </li>
-          <li>
-            {/* eslint-disable-next-line*/}
-            <a id="signout" ref={signoutButton} className="waves-effect waves-light btn">Sign out</a>
-
-          </li>
-        </ul>
-      </div>
-    </nav>
+      <nav>
+        <div className="nav-wrapper blue-grey darken-1">
+          <ul id="nav-mobile" className="right">
+            <li>
+              {/* eslint-disable-next-line*/}
+              <a id="signin" ref={signinButton} className="waves-effect waves-light btn">Sign in</a>
+            </li>
+            <li>
+              {/* eslint-disable-next-line*/}
+              <a id="signout" ref={signoutButton} className="waves-effect waves-light btn">Sign out</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
   );
 }
 
@@ -132,8 +130,10 @@ function App() {
   var googleSigningButton = React.useRef();
   var googleSignoutButton = React.useRef();
 
+  React.useEffect(()=> M.AutoInit())
+
   React.useEffect(() => {
-    M.AutoInit();
+    
     console.log('App - useEffect is called');
     const googleApiScript = document.createElement('script');
     googleApiScript.src = 'https://apis.google.com/js/api.js';
@@ -142,6 +142,7 @@ function App() {
     window.document.body.appendChild(googleApiScript);
     googleApiScript.addEventListener('load', () => {
       window.gapi.load('client:auth2', () => initClient(googleSigningButton.current, googleSignoutButton.current, (response) => {
+        
         console.log(response.result);
         setCalendars(response.result.items || []);
       }));
@@ -153,8 +154,8 @@ function App() {
     <div>
       <Navigation signinButton={googleSigningButton} signoutButton={googleSignoutButton}></Navigation>
       <div className="container">
-        <div class="row">
-          <div class="col s12 m6">
+        <div className="row">
+          <div className="col s12 m6">
             <GCalendarList calendars={calendars}></GCalendarList>
           </div>
         </div>
